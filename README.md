@@ -19,7 +19,7 @@ Crie um novo projeto, no Eclipse, utilizando o wizard de projeto Maven (Maven Pr
 
 Rodando o projeto
 ---------------
-Abra o arquivo pom.xml, na raiz do projeto, e localize a tag camel-version. Atualize o conteúdo para 2.10.0. Clique com o botão direito em cima do projeto recém-criado e selecione Run As -> Maven Build... . Na caixa que abrir, coloque como goals clean jetty:run. Na aba JRE, adicione a seguinte diretiva: "-XX:MaxPermSize=256m" (sem as aspas) e clique em Run. O Camel será inicializado utilizando um contêiner Jetty embutido.
+Abra o arquivo pom.xml, na raiz do projeto, e localize a tag camel-version. Atualize o conteúdo para 2.10.0. Clique com o botão direito em cima do projeto recém-criado e selecione Run As -> Maven Build... . Na caixa que abrir, coloque como goals clean jetty:run. Na aba JRE, adicione a seguinte diretiva: "-XX:MaxPermSize=256M" (sem as aspas) e clique em Run. O Camel será inicializado utilizando um contêiner Jetty embutido.
 
 Entendendo o que está sendo feito
 ---------------
