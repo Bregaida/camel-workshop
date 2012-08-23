@@ -23,4 +23,6 @@ Abra o arquivo pom.xml, na raiz do projeto, e localize a tag camel-version. Atua
 
 Entendendo o que está sendo feito
 ---------------
-Esse projeto 
+Esse projeto está configurado para inicializar duas rotas do Camel: uma, que lê arquivos de uma pasta (que está, a partir da raiz do projeto, em src/data) e imprime o conteúdo na saída padrão do sistema, ao mesmo tempo que manda para uma fila do ActiveMQ (a saber, personnel.records). A segunda rota consome essas mensagens e faz um teste, baseado em XPath, para descobrir em que pasta deve salvar o registro consumido. Se a cidade for London, salva (a partir da raiz do projeto) em target/messages/uk. Caso contrário, salva em target/messages/others. 
+
+Além disso, tudo isso é publicado em um console web (acessado em http://localhost:8080/) e por uma API Rest, cuja documentação pode ser encontrada em http://localhost:8080/api. 
