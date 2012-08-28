@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="ServicoEstoque" targetNamespace="http://services.camel.workshops.concretesolutions.com.br/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://services.camel.workshops.concretesolutions.com.br/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://services.camel.workshops.concretesolutions.com.br/" xmlns:tns="http://services.camel.workshops.concretesolutions.com.br/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="produto" type="tns:produto"/>
+  <xs:complexType name="produto">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="quantidadeDisponivel" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="checarDisponibilidade" type="tns:checarDisponibilidade"/>
+  <xs:complexType name="checarDisponibilidade">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="tns:produto"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="checarDisponibilidadeResponse" type="tns:checarDisponibilidadeResponse"/>
+  <xs:complexType name="checarDisponibilidadeResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:produto"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="checarDisponibilidade">
+    <wsdl:part element="tns:checarDisponibilidade" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="checarDisponibilidadeResponse">
+    <wsdl:part element="tns:checarDisponibilidadeResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ServicoEstoquePortType">
+    <wsdl:operation name="checarDisponibilidade">
+      <wsdl:input message="tns:checarDisponibilidade" name="checarDisponibilidade">
+    </wsdl:input>
+      <wsdl:output message="tns:checarDisponibilidadeResponse" name="checarDisponibilidadeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServicoEstoqueSoapBinding" type="tns:ServicoEstoquePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="checarDisponibilidade">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="checarDisponibilidade">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="checarDisponibilidadeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServicoEstoque">
+    <wsdl:port binding="tns:ServicoEstoqueSoapBinding" name="ServicoEstoquePort">
+      <soap:address location="http://localhost:8080/webservices/estoque"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

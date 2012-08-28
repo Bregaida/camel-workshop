@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	
+	<context:component-scan base-package="br.com.concretesolutions.workshops.camel" />
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="camel" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<tx:annotation-driven />
+
+	<bean id="jpaTemplate" class="org.springframework.orm.jpa.JpaTemplate">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<bean id="aggregator" class="br.com.concretesolutions.workshops.camel.processors.AgregadorProdutos" />
+	<bean id="compoePedido" class="br.com.concretesolutions.workshops.camel.processors.CompoePedido" />
+
+	<cxf:cxfEndpoint id="estoqueClient" 
+		serviceClass="br.com.concretesolutions.workshops.camel.services.ServicoEstoque"
+		wsdlURL="/estoque.wsdl" />
+
+	<camel:camelContext depends-on="queryProcessor">
+		<camel:package>br.com.concretesolutions.workshops.camel</camel:package>
+		<camel:dataFormats>
+			<camel:jaxb id="jaxb" prettyPrint="true"
+				contextPath="br.com.concretesolutions.workshops.camel" fragment="true"/>
+		</camel:dataFormats>
+
+		<camel:route>
+			<camel:from
+				uri="cxf:/estoque?serviceClass=br.com.concretesolutions.workshops.camel.services.ServicoEstoque" />
+			<camel:process ref="queryProcessor" />
+			<camel:to uri="stream:out" />
+		</camel:route>
+		
+		<camel:route>
+			<camel:from uri="cxf:/pedidos?serviceClass=br.com.concretesolutions.workshops.camel.services.ServicoPedidos" />
+			<camel:convertBodyTo type="br.com.concretesolutions.workshops.camel.model.Pedido" />
+			<camel:marshal ref="jaxb" />
+			<camel:setHeader headerName="operationName">
+				<camel:constant>checarDisponibilidade</camel:constant>
+			</camel:setHeader>
+			<camel:split strategyRef="aggregator" >
+				<camel:xpath>//produto</camel:xpath>
+				<camel:unmarshal ref="jaxb" />				
+				<camel:to uri="cxf:bean:estoqueClient"/>
+			</camel:split>
+			<camel:process ref="compoePedido" />			
+		</camel:route>
+
+	</camel:camelContext>
+
+</beans>
